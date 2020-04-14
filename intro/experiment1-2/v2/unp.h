@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#include <errno.h>
 
 #define MAXLINE 4096 /* max text line length */
 
