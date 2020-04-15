@@ -26,9 +26,7 @@ void err_sys(const char* fmt, ...){
     }
     va_list ap;
     va_start(ap, fmt);
-    char buf[MAXLINE+1];
-    vsnprintf(buf, 255, fmt, ap);
-    fputs(buf, stderr);
+    err_doit(fmt, ap);
     va_end(ap);
     exit(1);
 }

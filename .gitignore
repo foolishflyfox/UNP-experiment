@@ -1,7 +1,6 @@
 unix-network-programming-v3
 **/settings.json
-**/a.out
+**/*.out
 **/tmp.c
 **/*.o
-
 
