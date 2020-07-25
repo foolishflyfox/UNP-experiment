@@ -13,10 +13,13 @@
 #include <strings.h>
 
 #define MAXLINE 4096
+#define	LISTENQ 1024
 typedef struct sockaddr SA;
 
 int Socket(int family, int type, int protocol);
 void Listen(int fd, int backlog);
+void Bind(int fd, const struct sockaddr *addr, socklen_t addrlen);
+int Accept(int fd, struct sockaddr *addr, socklen_t *addrlen);
 
 ssize_t readn(int fd, void *buff, size_t nbytes);
 ssize_t written(int fd, const void *buff, size_t nbytes);
