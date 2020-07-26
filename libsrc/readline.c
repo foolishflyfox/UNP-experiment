@@ -23,3 +23,11 @@ ssize_t readline(int fd, void *buff, size_t maxlen){
     return n;
 }
 
+ssize_t Readline(int fd, void *buff, size_t maxlen){
+    ssize_t n;
+    if((n = readline(fd, buff, maxlen)) < 0){
+        perror("readline error"); exit(1);
+    }
+    return n;
+}
+
