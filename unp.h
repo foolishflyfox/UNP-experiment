@@ -4,13 +4,15 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <stdio.h>
-#include <sys/wait.h>
-#include <sys/socket.h>
 #include <stdlib.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <errno.h>
 #include <strings.h>
+#include <sys/wait.h>
+#include <sys/socket.h>
+#include <sys/signal.h>
+#include <signal.h>
 
 #define MAXLINE 4096
 #define	LISTENQ 1024
@@ -32,6 +34,9 @@ ssize_t readline(int fd, void *buff, size_t maxlen);
 ssize_t Readline(int fd, void *buff, size_t maxlen);
 
 void Inet_pton(int family, const char *src, void *dst);
+
+typedef void Sigfunc(int);
+Sigfunc* Signal(int signo, Sigfunc *func);
 
 
 void str_echo(int sockfd);
