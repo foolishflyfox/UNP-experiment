@@ -1,6 +1,19 @@
 // 5-14.c
 #include "unp.h"
 
+void str_cli2(FILE* fp, int sockfd){
+    char sendline[MAXLINE], recvline[MAXLINE];
+    while(Fgets(sendline, MAXLINE, fp)!=NULL){
+        written(sockfd, sendline, 1);
+        sleep(1);
+        written(sockfd, sendline+1, strlen(sendline)-1);
+        if(Readline(sockfd, recvline, MAXLINE)==0){
+            perror("str_cli: server terminated permaturely");
+            exit(1);
+        }
+        fputs(recvline, stdout);
+    }
+}
 int main(int argc, char *argv[]){
     int sockfd;
     struct sockaddr_in servaddr;
@@ -14,7 +27,8 @@ int main(int argc, char *argv[]){
     servaddr.sin_port = htons(SERV_PORT);
     Inet_pton(AF_INET, argv[1], &servaddr.sin_addr);
     Connect(sockfd, (SA*)&servaddr, sizeof(servaddr));
-    str_cli(stdin, sockfd);     /* do it all */
+    str_cli2(stdin, sockfd);     /* do it all */
     exit(0);
 }
+
 
