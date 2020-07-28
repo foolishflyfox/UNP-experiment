@@ -8,7 +8,7 @@ Sigfunc* Signal(int signo, Sigfunc *func){
     act.sa_flags = 0;
     if(signo == SIGALRM){
 #ifdef SA_INTERRUPT
-        act.sa_falgs |= SA_INTERRUPT;   /* SunOS 4.x */
+        act.sa_flags |= SA_INTERRUPT;   /* SunOS 4.x */
 #endif
     }else{
 #ifdef SA_RESTART
