@@ -1,13 +1,6 @@
 // tcpcli01.c
 #include "unp.h"
 
-const char* getcurtime(){
-    static char strtm[64];
-    time_t t = time(NULL);
-    strftime(strtm, sizeof(strtm), "%F %T", localtime(&t));
-    return strtm;
-}
-
 int main(int argc, char *argv[]){
     if(argc!=2){
         fprintf(stderr, "Usage: %s <IP>\n", argv[0]); exit(1);

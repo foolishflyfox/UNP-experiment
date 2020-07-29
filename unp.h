@@ -14,6 +14,7 @@
 #include <sys/socket.h>
 #include <sys/signal.h>
 #include <signal.h>
+#include <time.h>
 
 #define MAXLINE 4096
 #define	LISTENQ 1024
@@ -39,6 +40,7 @@ void Inet_pton(int family, const char *src, void *dst);
 typedef void Sigfunc(int);
 Sigfunc* Signal(int signo, Sigfunc *func);
 
+const char* getcurtime();
 
 void str_echo(int sockfd);
 void str_cli(FILE *fp, int sockfd);
