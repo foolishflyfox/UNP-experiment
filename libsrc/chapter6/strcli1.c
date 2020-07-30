@@ -1,4 +1,4 @@
-// libsrc/chapter6/str_cli.c
+// libsrc/chapter6/strcli1.c
 #include "unp.h"
 
 void str_cli(FILE *fp, int sockfd){
@@ -14,19 +14,22 @@ void str_cli(FILE *fp, int sockfd){
             if(errno == EINTR) continue;
             perror("select error"); exit(1);
         }
-        if(FD_ISSET(sockfd, &rset)){
-            if((n=read(sockfd, recvline, sizeof(recvline)))<=0){
+        if(FD_ISSET(fpfd, &rset))
+        {
+            if(Fgets(sendline, sizeof(sendline), fp)==NULL){
+                return;
+            }
+            written(sockfd, sendline, strlen(sendline));
+        }
+        if(FD_ISSET(sockfd, &rset))
+        {
+            if((n = read(sockfd, recvline, sizeof(recvline)))<=0){
                 fprintf(stderr, "%s str_cli: server terminated prematurely\n",
                             getcurtime());
                 exit(11);
             }
             recvline[n] = '\0';
-            fprintf(stdout, "%s: %s", getcurtime(), recvline);
-        }
-        if(FD_ISSET(fpfd, &rset)){
-            if(Fgets(sendline, sizeof(sendline), fp)==NULL)
-                return;
-            written(sockfd, sendline, strlen(sendline));
+            printf("%s", recvline);
         }
     }
 }
