@@ -15,10 +15,20 @@
 #include <sys/signal.h>
 #include <signal.h>
 #include <time.h>
+#include <limits.h>
+#include <poll.h>
 
 #define MAXLINE 4096
 #define	LISTENQ 1024
 #define SERV_PORT 9877
+
+#ifndef INFTIM
+#define INFTIM -1
+#endif
+#ifndef OPEN_MAX
+#define OPEN_MAX 1024
+#endif
+
 typedef struct sockaddr SA;
 
 pid_t Fork(void);
@@ -39,6 +49,9 @@ void Inet_pton(int family, const char *src, void *dst);
 
 typedef void Sigfunc(int);
 Sigfunc* Signal(int signo, Sigfunc *func);
+
+int Select(int maxfdp1, fd_set *rset, fd_set *wset, fd_set *eset, 
+            struct timeval *timeout);
 
 const char* getcurtime();
 
