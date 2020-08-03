@@ -17,6 +17,7 @@
 #include <time.h>
 #include <limits.h>
 #include <poll.h>
+#include <sys/un.h>
 
 #define MAXLINE 4096
 #define	LISTENQ 1024
@@ -44,8 +45,14 @@ ssize_t written(int fd, const void *buff, size_t nbytes);
 char* Fgets(char *ptr, int n, FILE *stream);
 ssize_t readline(int fd, void *buff, size_t maxlen);
 ssize_t Readline(int fd, void *buff, size_t maxlen);
+ssize_t Recvfrom(int fd, void *buff, size_t nbytes, int flags,
+                struct sockaddr *sa, socklen_t *salenptr);
+void Sendto(int fd, const void *ptr, size_t nbytes, int flags,
+                const struct sockaddr *sa, socklen_t salen);
 
 void Inet_pton(int family, const char *src, void *dst);
+char * sock_ntop(const struct sockaddr *sa, socklen_t salen);
+char * Sock_ntop(const struct sockaddr *sa, socklen_t salen);
 
 typedef void Sigfunc(int);
 Sigfunc* Signal(int signo, Sigfunc *func);
@@ -57,5 +64,7 @@ const char* getcurtime();
 
 void str_echo(int sockfd);
 void str_cli(FILE *fp, int sockfd);
+void dg_echo(int sockfd, SA *pcliaddr, socklen_t clilen);
+void dg_cli(FILE *fp, int sockfd, const SA *pservaddr, socklen_t servlen);
 #endif
 
