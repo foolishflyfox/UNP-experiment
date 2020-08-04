@@ -49,10 +49,15 @@ ssize_t Recvfrom(int fd, void *buff, size_t nbytes, int flags,
                 struct sockaddr *sa, socklen_t *salenptr);
 void Sendto(int fd, const void *ptr, size_t nbytes, int flags,
                 const struct sockaddr *sa, socklen_t salen);
+void Write(int fd, const void *ptr, size_t nbytes);
+ssize_t Read(int fd, void *ptr, size_t nbytes);
 
 void Inet_pton(int family, const char *src, void *dst);
 char * sock_ntop(const struct sockaddr *sa, socklen_t salen);
 char * Sock_ntop(const struct sockaddr *sa, socklen_t salen);
+void Getsockname(int fd, struct sockaddr *sa, socklen_t *salenptr);
+
+void Setsockopt(int fd, int level, int optname, const void*optval, socklen_t optlen);
 
 typedef void Sigfunc(int);
 Sigfunc* Signal(int signo, Sigfunc *func);
