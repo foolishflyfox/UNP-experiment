@@ -18,6 +18,7 @@
 #include <limits.h>
 #include <poll.h>
 #include <sys/un.h>
+#include <netdb.h>
 
 #define MAXLINE 4096
 #define	LISTENQ 1024
@@ -53,6 +54,7 @@ void Write(int fd, const void *ptr, size_t nbytes);
 ssize_t Read(int fd, void *ptr, size_t nbytes);
 
 void Inet_pton(int family, const char *src, void *dst);
+const char* Inet_ntop(int family, const void *addrptr, char *strptr, size_t len);
 char * sock_ntop(const struct sockaddr *sa, socklen_t salen);
 char * Sock_ntop(const struct sockaddr *sa, socklen_t salen);
 void Getsockname(int fd, struct sockaddr *sa, socklen_t *salenptr);
@@ -71,5 +73,7 @@ void str_echo(int sockfd);
 void str_cli(FILE *fp, int sockfd);
 void dg_echo(int sockfd, SA *pcliaddr, socklen_t clilen);
 void dg_cli(FILE *fp, int sockfd, const SA *pservaddr, socklen_t servlen);
+
+int connect_timeo(int sockfd, const SA *addr, socklen_t len, int nsec);
 #endif
 
