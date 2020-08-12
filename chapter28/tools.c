@@ -29,6 +29,53 @@ ushort CheckSum(unsigned short data[], size_t len){
     return sum;
 }
 
+int SendIPData(unsigned char data[], int datalen){
+    if(datalen < 20) {
+        fprintf(stderr, "SendIPData errpr: datalen less than 20");
+        return -1;
+    }
+    // 超级用户才能创建 IP 套接字
+    int sockfd = socket(AF_INET, SOCK_RAW, IPPROTO_IP);
+    if(sockfd == -1) { perror("socket error"); return -1; }
+    int on = 1;
+    if(setsockopt(sockfd, IPPROTO_IP, IP_HDRINCL, &on, sizeof(on))<0){
+        perror("setsocketopt error"); return -1;
+    }
+    struct sockaddr_in dst_addr;
+    struct ip *ip = (struct ip*)data;
+    memset(&dst_addr, 0, sizeof(dst_addr));
+    dst_addr.sin_family = AF_INET;
+    dst_addr.sin_addr = ip->ip_dst;
+
+    if(sendto(sockfd, data, datalen, 0, (struct sockaddr*)&dst_addr,
+        sizeof(dst_addr)) < 0){
+        perror("sendto error"); return -1;
+    }
+    return 0;
+}
+
+int GetInAddrByName(const char *name, in_addr_t* addrptr){
+    struct hostent *hp;
+    if((hp = gethostbyname(optarg))==NULL) return -1;
+    if(hp->h_addrtype != AF_INET) return -1;
+    memcpy(addrptr, hp->h_addr_list[0], hp->h_length);
+    return 0;
+}
+
+void SetIPDftHdr(struct ip *ip){
+    ip->ip_v = 4;  // 使用 IPv4 协议
+    ip->ip_hl = (sizeof(*ip)) >> 2;  // 首部长度(以4字节为单位)
+    ip->ip_tos = 0;  // 4~1位: 最小延时/最大吞吐量/最高可靠性/最小费用
+    // ip->ip_len = sizeof(*ip)+20;  // IP PDU报文长度
+    ip->ip_id = 0;  // 可以为任意值, 若置为0，则由内核配置
+    ip->ip_off = 0;  // 标记(3bit)+段偏移量(13bit)
+    ip->ip_ttl = 64;
+    // ip->ip_p = proto;  // 高层协议为
+    ip->ip_sum = 0;  // 内核计算校验和
+    // ip->ip_src;  // 源IP地址字段
+    // ip->ip_dst;  // 目标IP地址字段
+}
+
 static inline int TOHEX_VALUE(char c) {
     if(c<='f' && c>='a') c = 10+c-'a';
     else if(c<='F' && c>='A') c = 10+c-'A';

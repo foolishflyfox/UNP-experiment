@@ -18,8 +18,13 @@
 #define BSZ 4096
 #endif
 
-const char* GetIPByName(const char *name);
+int SendIPData(unsigned char data[], int datalen);
+// 设置 IP 的通用字段
+void SetIPDftHdr(struct ip *ip);
 ushort CheckSum(unsigned short data[], size_t len);
+
+const char* GetIPByName(const char *name);
+int GetInAddrByName(const char *name, in_addr_t *addrptr);
 int HexToData(FILE *fp, unsigned char buf[], int bufsize);
 
 #endif
