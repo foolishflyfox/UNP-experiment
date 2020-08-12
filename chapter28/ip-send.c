@@ -78,7 +78,7 @@ int main(int argc, char *argv[]){
         sizeof(dst_addr)) < 0){
         perror("sendto error"); exit(1);
     }
-    sleep(1);
+    // sleep(1);
     return 0;
 }
 

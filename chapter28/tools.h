@@ -14,6 +14,6 @@
 #include <sys/time.h>
 
 const char* GetIPByName(const char *name);
-ushort checksum(u_char data[], size_t len);
+ushort checksum(unsigned short data[], size_t len);
 
 #endif

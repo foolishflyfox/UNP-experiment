@@ -18,7 +18,7 @@ const char* GetIPByName(const char *name){
     return inet_ntop(AF_INET, *pptr, str, sizeof(str));
 }
 
-ushort checksum(u_char data[], size_t len){
+ushort checksum(unsigned short data[], size_t len){
     u_int32_t sum = 0;
     for(int i=0; i<len; ++i){
         ushort tv = data[i];

@@ -41,7 +41,7 @@ int main(int argc, char *argv[]){
     ip->ip_hl = sizeof(*ip) >> 2;  // 首部长度(以4字节为单位)
     ip->ip_tos = 0;  // 4~1位: 最小延时/最大吞吐量/最高可靠性/最小费用
     ip->ip_len = sizeof(*ip)+20;  // ICMP 时间请求报文长度为 20
-    ip->ip_id = htons(0x1122);  // 可以为任意值
+    ip->ip_id = 0;  // 可以为任意值, 若置为0，则由内核配置
     ip->ip_off = 0;  // 标记(3bit)+段偏移量(13bit)
     ip->ip_ttl = 64;
     ip->ip_p = IPPROTO_ICMP;  // 高层协议为 ICMP
@@ -51,15 +51,15 @@ int main(int argc, char *argv[]){
     icmp->icmp_type = ICMP_TSTAMP; // 类型(1B): 13 发送
     icmp->icmp_code = 0;  // 代码(1B)
     icmp->icmp_cksum = 0;  // 校验和(2B): 之后计算
-    icmp->icmp_id = 0;  // 标识符(2B)
-    icmp->icmp_seq = 1;  // 序列号(2B)
+    icmp->icmp_id = getpid();  // 标识符(2B)
+    icmp->icmp_seq = 12345;  // 序列号(2B)
     // 发起时间戳(4B) 接收时间戳(4B) 传送时间戳(4B)
     struct timeval cur;
     gettimeofday(&cur, NULL);
     //发送时间戳: 从午夜开始的毫秒数，其他两个时间戳保持为0
-    // *(uint32_t*)(&(icmp->icmp_otime)) = (cur.tv_sec%(24*3600))*1000+cur.tv_usec;
+    icmp->icmp_otime = htonl((cur.tv_sec%(24*3600))*1000+cur.tv_usec/1000);
     // ICMP 计算校验和
-    icmp->icmp_cksum = checksum((u_char*)icmp, 20);
+    icmp->icmp_cksum = checksum((unsigned short*)icmp, 10);
     for(int i=0; i<40; ++i)
         printf("%02x%c", buf[i], " \n"[(i+1)%16==0]);
 }
