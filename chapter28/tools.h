@@ -13,7 +13,13 @@
 #include <arpa/inet.h>
 #include <sys/time.h>
 
+// 可以发送的最大数据量
+#ifndef BSZ
+#define BSZ 4096
+#endif
+
 const char* GetIPByName(const char *name);
-ushort checksum(unsigned short data[], size_t len);
+ushort CheckSum(unsigned short data[], size_t len);
+int HexToData(FILE *fp, unsigned char buf[], int bufsize);
 
 #endif

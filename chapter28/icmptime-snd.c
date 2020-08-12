@@ -59,7 +59,7 @@ int main(int argc, char *argv[]){
     //发送时间戳: 从午夜开始的毫秒数，其他两个时间戳保持为0
     icmp->icmp_otime = htonl((cur.tv_sec%(24*3600))*1000+cur.tv_usec/1000);
     // ICMP 计算校验和
-    icmp->icmp_cksum = checksum((unsigned short*)icmp, 10);
+    icmp->icmp_cksum = CheckSum((unsigned short*)icmp, 10);
     for(int i=0; i<40; ++i)
         printf("%02x%c", buf[i], " \n"[(i+1)%16==0]);
 }
