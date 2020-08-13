@@ -29,17 +29,21 @@ ushort CheckSum(unsigned short data[], size_t len){
     return sum;
 }
 
-int SendIPData(unsigned char data[], int datalen){
+int SendIPData(int fd, unsigned char data[], int datalen){
     if(datalen < 20) {
         fprintf(stderr, "SendIPData errpr: datalen less than 20");
         return -1;
     }
-    // 超级用户才能创建 IP 套接字
-    int sockfd = socket(AF_INET, SOCK_RAW, IPPROTO_IP);
-    if(sockfd == -1) { perror("socket error"); return -1; }
-    int on = 1;
-    if(setsockopt(sockfd, IPPROTO_IP, IP_HDRINCL, &on, sizeof(on))<0){
-        perror("setsocketopt error"); return -1;
+    int sockfd;
+    if(fd > 0){ sockfd = fd; }
+    else{
+        // 超级用户才能创建 IP 套接字
+        sockfd = socket(AF_INET, SOCK_RAW, IPPROTO_IP);
+        if(sockfd == -1) { Perror("socket error"); return -1; }
+        int on = 1;
+        if(setsockopt(sockfd, IPPROTO_IP, IP_HDRINCL, &on, sizeof(on))<0){
+            Perror("setsocketopt error"); return -1;
+        }
     }
     struct sockaddr_in dst_addr;
     struct ip *ip = (struct ip*)data;
@@ -49,8 +53,9 @@ int SendIPData(unsigned char data[], int datalen){
 
     if(sendto(sockfd, data, datalen, 0, (struct sockaddr*)&dst_addr,
         sizeof(dst_addr)) < 0){
-        perror("sendto error"); return -1;
+        Perror("sendto error"); return -1;
     }
+    if(fd <= 0) close(sockfd);
     return 0;
 }
 

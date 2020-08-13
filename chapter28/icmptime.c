@@ -3,7 +3,7 @@
 #include "tools.h"
 
 int SendProcess(in_addr_t srcaddr, in_addr_t dstaddr){
-    u_char buf[1500] = {0};
+    u_char buf[BSZ] = {0};
     struct ip *ip = (struct ip*)buf;
     struct icmp *icmp = (struct icmp*)(ip+1);
     // 填充 IP 首部默认值
@@ -25,7 +25,7 @@ int SendProcess(in_addr_t srcaddr, in_addr_t dstaddr){
     icmp->icmp_otime = htonl((cur.tv_sec%(24*3600))*1000+cur.tv_usec/1000);
     // ICMP 计算校验和
     icmp->icmp_cksum = CheckSum((unsigned short*)icmp, 10);
-    if(SendIPData(buf, 40)==-1) return -1;
+    if(SendIPData(-1, buf, 40)==-1) return -1;
     return 0;
 }
 void RecvProcess(int dstaddr){
@@ -82,7 +82,7 @@ int main(int argc, char *argv[]){
         }
     }
     if(dstaddr == 0){ fputs(s_err, stderr); exit(1); }
-    // SendProcess(srcaddr, dstaddr);
+    
     pid_t pid = fork();
     if(pid==-1) { perror("fork error"); exit(1); }
     if(pid){

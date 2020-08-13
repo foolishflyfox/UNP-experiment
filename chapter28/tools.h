@@ -14,14 +14,19 @@
 #include <sys/time.h>
 #include <strings.h>
 #include <signal.h>
+#include <sys/wait.h>
 
 // 可以发送的最大数据量
 #ifndef BSZ
 #define BSZ 4096
 #endif
 
+#define Perror(s) \
+    (fprintf(stderr, "[%s:%d] ", __FILE__, __LINE__), \
+    perror(s))
+
 // 与数据收发相关的函数
-int SendIPData(unsigned char data[], int datalen);
+int SendIPData(int fd, unsigned char data[], int datalen);
 
 // 与协议相关的填充函数
 void SetIPDftHdr(struct ip *ip); // 设置 IP 的通用字段
