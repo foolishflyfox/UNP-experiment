@@ -54,9 +54,20 @@ int SendIPData(unsigned char data[], int datalen){
     return 0;
 }
 
+int InitIPRawSocket(in_addr_t dst, struct sockaddr_in *addr, socklen_t *len){
+    int sockfd = socket(AF_INET, SOCK_RAW, IPPROTO_IP);
+    if(sockfd < 0){ return -1; }
+    *len = sizeof(struct sockaddr_in);
+    bzero(addr, *len);
+    addr->sin_family = AF_INET;
+    // dst 为0时，接收任何目标地址的除TCP/IP外的数据报
+    addr->sin_addr.s_addr = dst;
+    return sockfd;
+}
+
 int GetInAddrByName(const char *name, in_addr_t* addrptr){
     struct hostent *hp;
-    if((hp = gethostbyname(optarg))==NULL) return -1;
+    if((hp = gethostbyname(name))==NULL) return -1;
     if(hp->h_addrtype != AF_INET) return -1;
     memcpy(addrptr, hp->h_addr_list[0], hp->h_length);
     return 0;

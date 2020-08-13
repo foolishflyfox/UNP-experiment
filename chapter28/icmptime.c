@@ -2,7 +2,7 @@
 // 该程序用于构建ICMP时间戳请求报文
 #include "tools.h"
 
-void SendProcess(in_addr_t srcaddr, in_addr_t dstaddr){
+int SendProcess(in_addr_t srcaddr, in_addr_t dstaddr){
     u_char buf[1500] = {0};
     struct ip *ip = (struct ip*)buf;
     struct icmp *icmp = (struct icmp*)(ip+1);
@@ -25,7 +25,36 @@ void SendProcess(in_addr_t srcaddr, in_addr_t dstaddr){
     icmp->icmp_otime = htonl((cur.tv_sec%(24*3600))*1000+cur.tv_usec/1000);
     // ICMP 计算校验和
     icmp->icmp_cksum = CheckSum((unsigned short*)icmp, 10);
-    SendIPData(buf, 40);
+    if(SendIPData(buf, 40)==-1) return -1;
+    return 0;
+}
+void RecvProcess(int dstaddr){
+    // 创建套接字
+    unsigned char recvbuf[BSZ];
+    struct sockaddr_in peeraddr = {0, AF_INET};
+    peeraddr.sin_addr.s_addr = dstaddr;
+    socklen_t addrlen = sizeof(struct sockaddr_in);
+    int sockfd = socket(AF_INET, SOCK_RAW, IPPROTO_IP);
+    if(-1==sockfd){ perror("socket error"); exit(1); }
+    // 接收数据
+    int cc = recvfrom(sockfd, recvbuf, sizeof(recvbuf), 0,
+        (struct sockaddr*)&peeraddr, &addrlen);
+    if(cc < 0) { perror("recvfrom error"); exit(1); }
+
+    struct timeval tv;
+    gettimeofday(&tv, 0);
+    struct icmp *icmp = (struct icmp*)(recvbuf+sizeof(struct ip));
+    long otime = ntohl(icmp->icmp_otime);
+    long rtime = ntohl(icmp->icmp_rtime);
+    long ttime = ntohl(icmp->icmp_ttime);
+    long rtt = (tv.tv_sec%(24*3600))*1000+tv.tv_usec/1000-otime;
+    long difference = rtime - (otime + rtt/2);
+    printf("orig = %ld, recv = %ld, xmit = %ld, rtt = %ld ms\n"
+    "difference = %ld ms\n", otime, rtime, ttime, rtt, difference);
+}
+void sig_chld(int signo){
+    wait(NULL);
+    exit(0);
 }
 
 int main(int argc, char *argv[]){
@@ -53,15 +82,20 @@ int main(int argc, char *argv[]){
         }
     }
     if(dstaddr == 0){ fputs(s_err, stderr); exit(1); }
-    SendProcess(srcaddr, dstaddr);
-    // pid_t pid = fork();
-    // if(pid==-1) { perror("fork error"); exit(1); }
-    // if(pid){
-    //     usleep(1);  // 让接收进程先启动
-    //     SendProcess(srcaddr, dstaddr);
-    // }else{
-
-    // }
+    // SendProcess(srcaddr, dstaddr);
+    pid_t pid = fork();
+    if(pid==-1) { perror("fork error"); exit(1); }
+    if(pid){
+        usleep(1);  // 让接收进程先启动
+        if(signal(SIGCHLD, sig_chld)==SIG_ERR) goto close_child;
+        if(SendProcess(srcaddr, dstaddr)==-1) goto close_child;
+        sleep(3);  // 至多等待3秒
+close_child:
+        kill(pid, SIGQUIT);
+        sleep(1);  // 等待执行 sig_chld 结束，避免僵死进程
+    }else{
+        RecvProcess(dstaddr);
+    }
 }
 
 

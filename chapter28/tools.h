@@ -12,17 +12,22 @@
 #include <netinet/ip_icmp.h>
 #include <arpa/inet.h>
 #include <sys/time.h>
+#include <strings.h>
+#include <signal.h>
 
 // 可以发送的最大数据量
 #ifndef BSZ
 #define BSZ 4096
 #endif
 
+// 与数据收发相关的函数
 int SendIPData(unsigned char data[], int datalen);
-// 设置 IP 的通用字段
-void SetIPDftHdr(struct ip *ip);
+
+// 与协议相关的填充函数
+void SetIPDftHdr(struct ip *ip); // 设置 IP 的通用字段
 ushort CheckSum(unsigned short data[], size_t len);
 
+int InitIPRawSocket(in_addr_t dst, struct sockaddr_in *addr, socklen_t *len);
 const char* GetIPByName(const char *name);
 int GetInAddrByName(const char *name, in_addr_t *addrptr);
 int HexToData(FILE *fp, unsigned char buf[], int bufsize);
