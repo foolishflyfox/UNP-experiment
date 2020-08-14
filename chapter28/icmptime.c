@@ -34,7 +34,7 @@ void RecvProcess(int dstaddr){
     struct sockaddr_in peeraddr = {0, AF_INET};
     peeraddr.sin_addr.s_addr = dstaddr;
     socklen_t addrlen = sizeof(struct sockaddr_in);
-    int sockfd = socket(AF_INET, SOCK_RAW, IPPROTO_IP);
+    int sockfd = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP);
     if(-1==sockfd){ perror("socket error"); exit(1); }
     // 接收数据
     int cc = recvfrom(sockfd, recvbuf, sizeof(recvbuf), 0,

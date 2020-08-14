@@ -35,18 +35,18 @@ int SendIPData(int fd, unsigned char data[], int datalen){
         return -1;
     }
     int sockfd;
+    struct sockaddr_in dst_addr;
+    struct ip *ip = (struct ip*)data;
     if(fd > 0){ sockfd = fd; }
     else{
         // 超级用户才能创建 IP 套接字
-        sockfd = socket(AF_INET, SOCK_RAW, IPPROTO_IP);
+        sockfd = socket(AF_INET, SOCK_RAW, ip->ip_p);
         if(sockfd == -1) { Perror("socket error"); return -1; }
         int on = 1;
         if(setsockopt(sockfd, IPPROTO_IP, IP_HDRINCL, &on, sizeof(on))<0){
             Perror("setsocketopt error"); return -1;
         }
     }
-    struct sockaddr_in dst_addr;
-    struct ip *ip = (struct ip*)data;
     memset(&dst_addr, 0, sizeof(dst_addr));
     dst_addr.sin_family = AF_INET;
     dst_addr.sin_addr = ip->ip_dst;
