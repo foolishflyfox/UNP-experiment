@@ -3,7 +3,8 @@ CC = gcc
 CFLAGS = -Wall
 
 PROGS = sock
-OBJS = error.o main.o
+OBJS = error.o main.o cliopen.o servopen.o buffers.o \
+		sockopts.o tellwait.c sourcesink.o loop.c crlf.c writen.c
 LIBS = 
 
 all: ${PROGS}

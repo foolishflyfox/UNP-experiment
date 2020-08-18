@@ -17,7 +17,7 @@ int broadcast;      // 使能 SO_BROADCAST 选项
 int debug;          // 使能 SO_DEBUG 选项
 int recvdstaddr;    // 使能 SO_RECVDSTADDR 选项
 int keepalive;      // 使能 SO_KEEPALIVE 选项
-long linger;         // 使能 SO_LINGER 选项的整型参数
+long linger = -1;         // 使能 SO_LINGER 选项的整型参数
 int nodelay;        // 使能 SO_NODELAY
 int rcvbuflen;      // SO_RCVBUF 要指定的接收缓冲区大小
 int sndbuflen;      // SO_SNDBUF 要制定的发送缓冲区大小
@@ -33,11 +33,15 @@ int pauseinit;      // 指定在首次调用 read 前暂停的秒数
 int pauseclose;     // 指定在收到 FIN 后，在调用 close 函数前暂停的秒数
 
 // 数据处理参数
-int nbuf = 1024;    // 输出模式写的数据量
+int nbuf = 1024;    // 输出模式下，write 调用的次数
 int readlen = 1024; // read() 函数指定的大小
 int writelen = 1024;// write() 函数指定的大小
 int crlf;           // 用于 \r\n 与 \n 的互转(多用于 Windows)
 int verbose;        // 显示正在进行的处理信息
+
+// 程序全局变量
+char *rbuf;         // 指向用 malloc 开辟的堆空间，用于读缓冲区
+char *wbuf;         // 指向用 malloc 开辟的堆空间，用于写缓冲区
 
 int sourcesink;
 int cbreak;
@@ -45,7 +49,7 @@ int cbreak;
 static void usage(const char *);
 
 int main(int argc, char *argv[]){
-    int c;
+    int c, fd;
     char *ptr;
 
     if(argc < 2) usage("");
@@ -168,7 +172,14 @@ int main(int argc, char *argv[]){
         }else
             usage("missing <port>");
     }
-    
+    if(client)
+        fd = cliopen(host, port);
+    else
+        fd = servopen(host, port);
+    if(sourcesink)
+        sink(fd);
+    else
+        loop(fd);
 }
 
 static void usage(const char *msg){

@@ -17,6 +17,15 @@ static void err_doit(int errnoflag, const char *fmt, va_list ap){
     return;
 }
 
+// 向 stderr 格式化输出错误, 附加 errno 相关内容
+void err_ret(const char *fmt, ...){
+    va_list ap;
+    va_start(ap, fmt);
+    err_doit(1, fmt, ap);
+    va_end(ap);
+    return;
+}
+
 // 向 stderr 格式化输出错误, 不附加 errno 相关内容
 void err_msg(const char *fmt, ...){
     va_list ap;
@@ -31,6 +40,15 @@ void  err_quit(const char *fmt, ...){
     va_list ap;
     va_start(ap, fmt);
     err_doit(0, fmt, ap);
+    va_end(ap);
+    exit(1);
+}
+
+// 向 stderr 格式化输出错误(打印errno相关信息)，并退出程序
+void err_sys(const char *fmt, ...){
+    va_list ap;
+    va_start(ap, fmt);
+    err_doit(1, fmt, ap);
     va_end(ap);
     exit(1);
 }
