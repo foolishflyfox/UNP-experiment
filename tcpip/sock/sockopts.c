@@ -93,7 +93,7 @@ void sockopts(int sockfd, int doall){
         if(verbose)
             fprintf(stderr, "IP_RECVDSTADDR set\n");
 #else
-        fprintf(stderr, "warning: IP_RECVDSTADDR not supported by host\n")
+        fprintf(stderr, "warning: IP_RECVDSTADDR not supported by host\n");
 #endif
     }
 }
