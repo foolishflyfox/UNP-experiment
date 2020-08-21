@@ -32,8 +32,8 @@ void sink(int sockfd){
                 err_sys("read error");
             }else if(n==0)
                 break;  // 连接被对端关闭
-            else if(n != readlen)
-                err_quit("read returned %d, expected %d", n, readlen);
+            // else if(n != readlen)
+                // err_quit("read returned %d, expected %d", n, readlen);
             if(verbose)
                 fprintf(stderr, "received %d bytes\n", n);
             if(pauserw)

@@ -33,9 +33,10 @@ int servopen(char *host, char *port){
     if(bind(fd, (struct sockaddr*)&serv_addr, sizeof(serv_addr))<0)
         err_sys("can't bind local address");
 
-    buffers(fd);
+    // buffers(fd);
     
     if(udp){
+        buffers(fd);
         if(foreignip[0]!=0){
             bzero(&cli_addr, sizeof(cli_addr));
             cli_addr.sin_family = AF_INET;
@@ -47,6 +48,7 @@ int servopen(char *host, char *port){
         sockopts(fd, 1);
         return fd;
     }
+    buffers(fd);
     sockopts(fd, 0);
     if(listen(fd, listenq)<0)
         err_sys("listen() error");

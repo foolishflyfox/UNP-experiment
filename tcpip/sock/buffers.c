@@ -21,7 +21,7 @@ void buffers(int sockfd){
         if(getsockopt(sockfd, SOL_SOCKET, SO_RCVBUF, &n, &optlen)<0)
             err_sys("SO_RCVBUF getsockopt error");
         if(n!=rcvbuflen)
-            err_quit("rcvbuflen = %d, SO_RCVBUF = %d", rcvbuflen, n);
+            fprintf(stderr, "rcvbuflen = %d, SO_RCVBUF = %d", rcvbuflen, n);
         if(verbose)
             fprintf(stderr, "SO_RCVBUF = %d\n", n);
     }
